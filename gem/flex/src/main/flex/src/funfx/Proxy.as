@@ -40,7 +40,7 @@ package funfx {
     private function fireFunFXEvent(locator:Object, eventName:String, args:String) : String{
       log.debug(Logging.toString("Started fire event", "Locator", Logging.convertLocator(locator), "Event", eventName, "Args", args));
 
-      return replayFunFXEvent(locator, eventName, convertArrayFromStringToAs(args));
+      return replayFunFXEvent(locator, eventName, convertArrayFromStringToAs(unescape(args)));
     }
 
     public function replayFunFXEvent(locator:Object, eventName:String, args:Array) : String
@@ -84,9 +84,13 @@ package funfx {
       }
       try {
         var target:IAutomationObject = flexObjectlocator.findAutomationObject(locator);
+        if(!target){
+          log.error(Logging.toString("Target is null", "Locator", Logging.convertLocator(locator), "Property", fieldName));
+          throw new Error("Unable to resolve child with locator: " + flexObjectlocator.toString(locator["id"]) + (locator["parent"] != null ? ", and parent: " + flexObjectlocator.toString(locator["parent"]["id"]) : ""));
+        }
         var o:Object = Object(target);
-        if (o.hasOwnProperty(fieldName)) {
-          return o[fieldName];
+        if (o.hasOwnProperty(fieldName)) {        	
+          return escape(o[fieldName]);
         } else if(fieldName == "null") {
           if (target == null)
             return "true";
@@ -114,9 +118,13 @@ package funfx {
       }
       try {
         var target:IAutomationObject = flexObjectlocator.findAutomationObject(locator);
+        if(!target){
+          log.error(Logging.toString("Target is null", "Locator", Logging.convertLocator(locator), "Property", fieldName));
+          throw new Error("Unable to resolve child with locator: " + flexObjectlocator.toString(locator["id"]) + (locator["parent"] != null ? ", and parent: " + flexObjectlocator.toString(locator["parent"]["id"]) : ""));
+        }
         var tab:Object = target.automationTabularData;
         if (tab.hasOwnProperty(fieldName)) {
-          return tab[fieldName];
+          return escape(tab[fieldName]);
         } else {
           log.error(Logging.toString("Field not found", "Property", fieldName, "Target", Logging.createComponentText(target as DisplayObject), "Locator", Logging.convertLocator(locator)));
           throw new Error("Field not found: " + target + " doesn't have a field named '" + fieldName + "'");
@@ -129,14 +137,24 @@ package funfx {
 
     private function invokeFunFXTabularMethod(locator:Object, methodName:String, ... args) : String
     {
-      log.debug(Logging.toString("Started finding property", "Locator", Logging.convertLocator(locator), "Property", methodName));
+      log.debug(Logging.toString("Started invoking method", "Locator", Logging.convertLocator(locator), "Method", methodName));
       if(!automationManager.isSynchronized(null)) {
         log.error("AutomationManager is not synchronized");
         return null;
       }
+      
+      // Unescape the arguments
+      for(var i:int = 0; i < args.length;i++)
+      {
+      	args[i]=escape(args[i]);
+      }
 
       try {
         var target:IAutomationObject = flexObjectlocator.findAutomationObject(locator);
+        if(!target){
+          log.error(Logging.toString("Target is null", "Locator", Logging.convertLocator(locator), "Method", methodName));
+          throw new Error("Unable to resolve child with locator: " + flexObjectlocator.toString(locator["id"]) + (locator["parent"] != null ? ", and parent: " + flexObjectlocator.toString(locator["parent"]["id"]) : ""));
+        }
         var tab:Object = target.automationTabularData;
         if (tab.hasOwnProperty(methodName)) {
           var result:* = tab[methodName].apply(null, args);
@@ -144,7 +162,7 @@ package funfx {
             result = CSVUtility.encode(result);
           }
 
-          return result;
+          return escape(result);
         } else {
           log.error(Logging.toString("Method not found", "Method", methodName, "Target", Logging.createComponentText(target as DisplayObject), "Locator", Logging.convertLocator(locator)));
           throw new Error("Method not found: " + target + " doesn't have a method named '" + methodName + "'");

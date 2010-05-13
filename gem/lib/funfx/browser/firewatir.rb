@@ -34,19 +34,23 @@ module FireWatir
       end
 
       def fire_event(flex_locator, event_name, args) # :nodoc:
-        eval_js %|#{DOCUMENT_VAR}.getElementById("#{@dom_id}").fireFunFXEvent(#{flex_locator}, #{event_name.inspect}, "#{args}");\n|
+        eval_js %|#{DOCUMENT_VAR}.getElementById("#{@dom_id}").fireFunFXEvent(#{flex_locator}, #{event_name.inspect}, escape("#{args}"));\n|
+        puts javascript                
       end
 
       def get_property_value(flex_locator, property) # :nodoc:
-        eval_js %|#{DOCUMENT_VAR}.getElementById("#{@dom_id}").getFunFXPropertyValue(#{flex_locator}, #{property.inspect});\n|
+        eval_js %|unescape(#{DOCUMENT_VAR}.getElementById("#{@dom_id}").getFunFXPropertyValue(#{flex_locator}, #{property.inspect}));\n|
+        puts javascript
       end
       
       def get_tabular_property_value(flex_locator, property) # :nodoc:
-        eval_js %|#{DOCUMENT_VAR}.getElementById("#{@dom_id}").getFunFXTabularPropertyValue(#{flex_locator}, #{property.inspect});\n|
+        eval_js %|unescape(#{DOCUMENT_VAR}.getElementById("#{@dom_id}").getFunFXTabularPropertyValue(#{flex_locator}, #{property.inspect}));\n|
+        puts javascript
       end
 
       def invoke_tabular_method(flex_locator, method_name, *args) # :nodoc:
-        eval_js %|#{DOCUMENT_VAR}.getElementById("#{@dom_id}").invokeFunFXTabularMethod(#{flex_locator}, #{method_name.inspect}, #{args.map{|a| a.inspect}.join(', ')});\n|
+        eval_js %|#{DOCUMENT_VAR}.getElementById("#{@dom_id}").invokeFunFXTabularMethod(#{flex_locator}, #{method_name.inspect}, escape(#{args.map{|a| a.inspect}.join(', ')}));\n|
+        puts javascript            
       end
 
       private

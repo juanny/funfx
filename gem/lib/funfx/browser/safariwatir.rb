@@ -20,7 +20,7 @@ module Watir
       end
 
       def fire_event(flex_locator, event_name, args) # :nodoc:
-        eval_js %{return element.fireFunFXEvent(#{flex_locator}, #{event_name.inspect}, "#{escape_double_quotes(args)}")}
+        eval_js %{return unescape(element.fireFunFXEvent(#{flex_locator}, #{event_name.inspect}, escape("#{escape_double_quotes(args)}")))}
       end
 
       def get_property_value(flex_locator, property) # :nodoc:
@@ -28,11 +28,11 @@ module Watir
       end
 
       def get_tabular_property_value(flex_locator, property) # :nodoc:
-        eval_js %{return element.getFunFXTabularPropertyValue(#{flex_locator}, #{property.inspect})}
+        eval_js %{unescape(return element.getFunFXTabularPropertyValue(#{flex_locator}, #{property.inspect}))}
       end
 
       def invoke_tabular_method(flex_locator, method_name, *args) # :nodoc:
-        eval_js %{return element.invokeFunFXTabularMethod(#{flex_locator}, #{method_name.inspect}, #{args.map{|a| a.inspect}.join(', ')})}
+        eval_js %{return element.invokeFunFXTabularMethod(#{flex_locator}, #{method_name.inspect}, escape(#{args.map{|a| a.inspect}.join(', ')}))}
       end
 
       private

@@ -24,22 +24,22 @@ module Watir
       end
 
       def fire_event(flex_locator, event_name, args) # :nodoc:
-        js = %|document.getElementById("#{@dom_id}").fireFunFXEvent(#{flex_locator}, #{event_name.inspect}, "#{args}");|
+        js = %|document.getElementById("#{@dom_id}").fireFunFXEvent(#{flex_locator}, #{event_name.inspect}, escape("#{args}"));|
         @ole_obj.ie.Document.parentWindow.execScript(js)
       end
 
       def get_property_value(flex_locator, property) # :nodoc:
-        js = %|document.getElementById("#{@dom_id}").getFunFXPropertyValue(#{flex_locator}, #{property.inspect});|
+        js = %|unescape(document.getElementById("#{@dom_id}").getFunFXPropertyValue(#{flex_locator}, #{property.inspect}));|
         @ole_obj.ie.Document.parentWindow.execScript(js)
       end
 
       def get_tabular_property_value(flex_locator, property) # :nodoc:
-        js = %|document.getElementById("#{@dom_id}").getFunFXTabularPropertyValue(#{flex_locator}, #{property.inspect});|
+        js = %|unescape(document.getElementById("#{@dom_id}").getFunFXTabularPropertyValue(#{flex_locator}, #{property.inspect}));|
         @ole_obj.ie.Document.parentWindow.execScript(js)
       end
 
       def invoke_tabular_method(flex_locator, method_name, *args) # :nodoc:
-        js = %|document.getElementById("#{@dom_id}").invokeFunFXTabularMethod(#{flex_locator}, #{property.inspect}, #{args.map{|a| a.inspect}.join(', ')});|
+        js = %|document.getElementById("#{@dom_id}").invokeFunFXTabularMethod(#{flex_locator}, #{property.inspect}, escape(#{args.map{|a| a.inspect}.join(', ')}));|
         @ole_obj.ie.Document.parentWindow.execScript(js)
       end
     end
